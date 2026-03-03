@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { ShieldCheck, ShieldAlert, Activity, LogOut, Send, AlertCircle, Filter, FilterX } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { ShieldCheck, ShieldAlert, Activity, LogOut, Send, AlertCircle, TrendingUp, DollarSign, Database } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar } from 'recharts';
 
 const Dashboard = () => {
     const [formData, setFormData] = useState({
@@ -24,7 +24,7 @@ const Dashboard = () => {
 
     // History State
     const [history, setHistory] = useState([]);
-    const [filter, setFilter] = useState('ALL'); // 'ALL', 'FRAUD', 'SAFE'
+    const [filter, setFilter] = useState('ALL');
 
     const handleChange = (e) => {
         setFormData({
@@ -41,7 +41,7 @@ const Dashboard = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const headers = token ? { Authorization: `Bearer ${token} ` } : {};
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
             const response = await axios.post('http://localhost:8000/predict', formData, {
                 headers
@@ -50,7 +50,6 @@ const Dashboard = () => {
             const newResult = response.data;
             setResult(newResult);
 
-            // Add to history
             const historyItem = {
                 id: Date.now(),
                 timestamp: new Date().toLocaleTimeString(),
@@ -59,7 +58,6 @@ const Dashboard = () => {
             };
             setHistory(prev => [historyItem, ...prev]);
 
-            // Send Email Alert if Fraud Detected
             if (newResult.isFraud) {
                 try {
                     const userEmail = localStorage.getItem('userEmail');
@@ -91,23 +89,35 @@ const Dashboard = () => {
         window.location.href = '/';
     };
 
-    // Filter History
     const filteredHistory = history.filter(item => {
         if (filter === 'FRAUD') return item.isFraud;
         if (filter === 'SAFE') return !item.isFraud;
         return true;
     });
 
-    // Chart Data Config
     const chartData = [
         { name: 'Risk', value: result ? result.riskScore : 0 },
         { name: 'Safe', value: result ? 100 - result.riskScore : 100 }
     ];
-    const COLORS = ['#ef4444', '#10b981']; // Red for risk, Green for safe
+    const COLORS = ['#ef4444', '#10b981'];
+
+    // Stats calculations
+    const totalTransactions = history.length;
+    const fraudCases = history.filter(h => h.isFraud).length;
+    const avgRiskScore = totalTransactions > 0
+        ? (history.reduce((acc, h) => acc + h.riskScore, 0) / totalTransactions).toFixed(1)
+        : 0;
+    const totalAmountAnalyzed = history.reduce((acc, h) => acc + Number(h.inputs.transaction_amount), 0);
+
+    const trendData = [...history].reverse().slice(-15).map((h) => ({
+        time: h.timestamp.split(' ')[0],
+        Risk: h.riskScore,
+        Amount: Number(h.inputs.transaction_amount)
+    }));
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-            <div className="max-w-5xl mx-auto">
+            <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pb-4">
                     <div>
                         <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center gap-3">
@@ -126,13 +136,52 @@ const Dashboard = () => {
                     )}
                 </div>
 
+                {/* NEW STATS OVERVIEW ROW */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4 transition-transform hover:scale-105">
+                        <div className="p-3 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-lg">
+                            <Database className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Analyzed</p>
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{totalTransactions}</h3>
+                        </div>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4 transition-transform hover:scale-105">
+                        <div className="p-3 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 rounded-lg">
+                            <ShieldAlert className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Fraud Detected</p>
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{fraudCases}</h3>
+                        </div>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4 transition-transform hover:scale-105">
+                        <div className="p-3 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400 rounded-lg">
+                            <Activity className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Avg Risk</p>
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{avgRiskScore}%</h3>
+                        </div>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4 transition-transform hover:scale-105">
+                        <div className="p-3 bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-lg">
+                            <DollarSign className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Vol</p>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">${totalAmountAnalyzed.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                    {/* Input Form Section */}
                     <div className="lg:col-span-2 bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gray-700 pb-4">
                             Transaction Telemetry
                         </h2>
-                        <form onSubmit={handlePredict} className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+                        <form onSubmit={handlePredict} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5">
                             {Object.keys(formData).map(key => (
                                 <div key={key}>
                                     <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
@@ -165,11 +214,11 @@ const Dashboard = () => {
                                 </div>
                             ))}
 
-                            <div className="sm:col-span-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                            <div className="sm:col-span-2 lg:col-span-3 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full flex justify-center items-center gap-2 bg-primary hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="w-full flex justify-center items-center gap-2 bg-primary hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
                                     {loading ? (
                                         <>
@@ -190,7 +239,6 @@ const Dashboard = () => {
                         </form>
                     </div>
 
-                    {/* Results Section */}
                     <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-200 dark:border-gray-700 flex flex-col">
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gray-700 pb-4">
                             Analysis Results
@@ -213,7 +261,6 @@ const Dashboard = () => {
 
                             {result && (
                                 <div className="animate-in fade-in duration-300">
-                                    {/* Chart - Fixed Overlap */}
                                     <div className="h-56 relative mb-4">
                                         <ResponsiveContainer width="100%" height="100%">
                                             <PieChart>
@@ -230,7 +277,7 @@ const Dashboard = () => {
                                                     stroke="none"
                                                 >
                                                     {chartData.map((entry, index) => (
-                                                        <Cell key={`cell - ${index} `} fill={COLORS[index % COLORS.length]} />
+                                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                                     ))}
                                                 </Pie>
                                             </PieChart>
@@ -243,13 +290,12 @@ const Dashboard = () => {
                                         </div>
                                     </div>
 
-                                    {/* Status Card */}
-                                    <div className={`p - 4 rounded - lg flex items - center gap - 4 ${result.isFraud
+                                    <div className={`p-4 rounded-lg flex items-center gap-4 ${result.isFraud
                                         ? 'bg-red-50 text-red-900 dark:bg-red-900/20 dark:text-red-100 border border-red-200 dark:border-red-800'
                                         : 'bg-green-50 text-green-900 dark:bg-green-900/20 dark:text-green-100 border border-green-200 dark:border-green-800'
-                                        } `}>
-                                        <div className={`p - 2 rounded - full ${result.isFraud ? 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400' : 'bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400'
-                                            } `}>
+                                        }`}>
+                                        <div className={`p-2 rounded-full ${result.isFraud ? 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400' : 'bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400'
+                                            }`}>
                                             {result.isFraud ? <ShieldAlert className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}
                                         </div>
                                         <div>
@@ -269,14 +315,65 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* History Section */}
+                {/* NEW CHARTS SECTION */}
+                {history.length > 0 && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                        <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gray-700 pb-4 flex items-center gap-2">
+                                <TrendingUp className="w-5 h-5 text-blue-500" />
+                                Risk Trend Analysis
+                            </h2>
+                            <div className="h-64">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id="colorRisk" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
+                                                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" opacity={0.3} />
+                                        <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6', borderRadius: '0.5rem' }}
+                                            itemStyle={{ color: '#f3f4f6' }}
+                                        />
+                                        <Area type="monotone" dataKey="Risk" stroke="#ef4444" fillOpacity={1} fill="url(#colorRisk)" />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+                            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gray-700 pb-4 flex items-center gap-2">
+                                <DollarSign className="w-5 h-5 text-green-500" />
+                                Transaction Amounts
+                            </h2>
+                            <div className="h-64">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" opacity={0.3} />
+                                        <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6', borderRadius: '0.5rem' }}
+                                            itemStyle={{ color: '#f3f4f6' }}
+                                            formatter={(value) => [`$${value}`, 'Amount']}
+                                        />
+                                        <Bar dataKey="Amount" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={30} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 sm:mb-0">
                             Transaction History
                         </h2>
-
-                        {/* Filters */}
                         <div className="inline-flex bg-gray-100 dark:bg-gray-900/50 rounded-lg p-1 border border-gray-200 dark:border-gray-700/50 shadow-inner">
                             <button
                                 onClick={() => setFilter('ALL')}
@@ -305,8 +402,8 @@ const Dashboard = () => {
                                 <tr>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Time</th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Amount</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Method</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Region</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Method</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Region</th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Risk Score</th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Status</th>
                                 </tr>
@@ -330,11 +427,11 @@ const Dashboard = () => {
                                         >
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">{item.timestamp}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${Number(item.inputs.transaction_amount).toFixed(2)}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.inputs.transaction_method}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.inputs.region}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.inputs.transaction_method}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.inputs.region}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{item.riskScore}%</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px - 2.5 py - 1 inline - flex text - xs leading - 5 font - semibold rounded - full ${item.isFraud ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-400' : 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-400'} `}>
+                                                <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${item.isFraud ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-400' : 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-400'}`}>
                                                     {item.isFraud ? 'Fraud' : 'Safe'}
                                                 </span>
                                             </td>
