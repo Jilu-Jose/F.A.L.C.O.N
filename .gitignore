@@ -1,0 +1,15 @@
+node_modules/
+client/node_modules/
+server/node_modules/
+venv/
+ml-service/venv/
+.env
+.env.*
+!.env.example
+dist/
+build/
+__pycache__/
+*.pyc
+*.log
+.DS_Store
+*.pkl
