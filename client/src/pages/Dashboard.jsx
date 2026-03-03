@@ -5,13 +5,17 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const Dashboard = () => {
     const [formData, setFormData] = useState({
-        distance_from_home: 10,
-        distance_from_last_transaction: 5,
-        ratio_to_median_purchase_price: 1,
-        repeat_retailer: 1,
-        used_chip: 0,
-        used_pin_number: 0,
-        online_order: 1
+        transaction_amount: 1200.50,
+        transaction_time: 14,
+        customer_age: 35,
+        distance_from_home: 15.5,
+        previous_fraud_history: 0,
+        merchant_risk_score: 0.1,
+        num_transactions_last_24hrs: 2,
+        account_type: "Savings",
+        region: "North",
+        transaction_method: "Online",
+        modelAlgorithm: "RandomForest"
     });
 
     const [result, setResult] = useState(null);
@@ -25,7 +29,7 @@ const Dashboard = () => {
     const handleChange = (e) => {
         setFormData({
             ...formData,
-            [e.target.name]: parseFloat(e.target.value) || 0
+            [e.target.name]: ['account_type', 'region', 'transaction_method', 'modelAlgorithm'].includes(e.target.name) ? e.target.value : (parseFloat(e.target.value) || 0)
         });
     };
 
@@ -134,14 +138,30 @@ const Dashboard = () => {
                                     <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
                                         {key.replace(/_/g, ' ')}
                                     </label>
-                                    <input
-                                        type="number"
-                                        step="any"
-                                        name={key}
-                                        value={formData[key]}
-                                        onChange={handleChange}
-                                        className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary transition-colors sm:text-sm"
-                                    />
+                                    {key === "modelAlgorithm" ? (
+                                        <select
+                                            name={key}
+                                            value={formData[key]}
+                                            onChange={handleChange}
+                                            className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary transition-colors sm:text-sm"
+                                        >
+                                            <option value="RandomForest">Random Forest</option>
+                                            <option value="LogisticRegression">Logistic Regression</option>
+                                            <option value="MLPClassifier">Neural Network (MLP)</option>
+                                            <option value="KNN">K-Nearest Neighbors</option>
+                                            <option value="SVC">Support Vector Classifier (SVC)</option>
+                                            <option value="GaussianNB">Gaussian Naive Bayes</option>
+                                        </select>
+                                    ) : (
+                                        <input
+                                            type={['account_type', 'region', 'transaction_method'].includes(key) ? 'text' : 'number'}
+                                            step={['account_type', 'region', 'transaction_method'].includes(key) ? undefined : 'any'}
+                                            name={key}
+                                            value={formData[key]}
+                                            onChange={handleChange}
+                                            className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary transition-colors sm:text-sm"
+                                        />
+                                    )}
                                 </div>
                             ))}
 
@@ -284,9 +304,9 @@ const Dashboard = () => {
                             <thead className="bg-gray-50 dark:bg-gray-900/80">
                                 <tr>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Time</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Dist. Home</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Ratio Price</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Online</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Amount</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Method</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Region</th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Risk Score</th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Status</th>
                                 </tr>
@@ -309,9 +329,9 @@ const Dashboard = () => {
                                             style={{ animationDelay: `${index * 50}ms` }}
                                         >
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">{item.timestamp}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.inputs.distance_from_home.toFixed(1)}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.inputs.ratio_to_median_purchase_price.toFixed(2)}x</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.inputs.online_order === 1 ? 'Yes' : 'No'}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${Number(item.inputs.transaction_amount).toFixed(2)}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.inputs.transaction_method}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.inputs.region}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{item.riskScore}%</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px - 2.5 py - 1 inline - flex text - xs leading - 5 font - semibold rounded - full ${item.isFraud ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-400' : 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-400'} `}>
