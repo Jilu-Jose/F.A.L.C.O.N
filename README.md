@@ -1,91 +1,150 @@
-# FALCON – Financial Anomaly & Loss Control Optimization Network
+<div align="center">
 
-![FALCON Logo](./client/src/assets/logos/falcon-logo.png)
+<img src="./client/src/assets/logos/falcon-logo.png" alt="FALCON Logo" width="140" />
 
-## Project Overview
+# FALCON
 
-FALCON is a production-ready MERN stack financial fraud detection system powered by AI. It features a React frontend, a Node.js/Express backend, and a Python FastAPI ML microservice to provide real-time fraud alerts and risk scoring for financial transactions.
+### Financial Anomaly & Loss Control Optimization Network
 
-Live: https://f-a-l-c-o-n.vercel.app/
+<br/>
 
-## Architecture Diagram
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-f--a--l--c--o--n.vercel.app-4F46E5?style=for-the-badge&logo=vercel&logoColor=white)](https://f-a-l-c-o-n.vercel.app/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
 
-- **Client (React/Vite)**: Modern frontend with dynamic dashboard.
-- **Server (Node.js/Express)**: Core business logic, authentication, sockets.
-- **Database (MongoDB Atlas)**: Stores users and transactions.
-- **ML Service (Python FastAPI)**: Processes transactions and returns AI risk scoring.
+<br/>
 
-## Tech Stack
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-0F172A?style=flat-square&logo=tailwindcss&logoColor=38BDF8)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=flat-square&logo=socketdotio&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
 
-**Frontend:** React (Vite), TailwindCSS, Context API, Chart.js/Recharts, Socket.io-client
-**Backend:** Node.js, Express, MongoDB (Mongoose), Socket.io, JWT, bcrypt
-**ML Service:** Python, FastAPI, scikit-learn, joblib, pandas, pydantic
-**DevOps:** Docker, Docker Compose
+<br/>
+
+*A production-ready, AI-powered financial fraud detection system with real-time alerts and machine learning risk scoring.*
+
+</div>
+
+---
+
+## Overview
+
+FALCON is a full-stack fraud detection platform built on a microservice architecture. It combines a React frontend, a Node.js/Express API server, and a Python FastAPI ML microservice to deliver real-time transaction monitoring, AI-driven risk scoring, and secure role-based access — all in a single cohesive system.
+
+---
 
 ## Features
 
-- **Microservice Architecture**: Clear separation of concerns between web backend and ML processing.
-- **Real-Time Monitoring**: Socket.io integration for instant fraud alerts.
-- **AI Risk Scoring**: Machine learning model evaluates transactions for fraudulent patterns securely.
-- **Secure Authentication**: JWT-based login with Role-Based Access Control (Admin, Analyst).
-- **Interactive Dashboard**: Animated KPI cards, risk distribution charts, scalable tables.
-- **Dark/Light Theme**: Seamless toggle between deep dark mode and vibrant light mode.
+| | Feature | Description |
+|---|---|---|
+| ![arch](https://img.shields.io/badge/-Microservices-6366F1?style=flat-square&logo=buffer&logoColor=white) | **Microservice Architecture** | Clean separation of concerns between the web backend and ML processing layer |
+| ![rt](https://img.shields.io/badge/-Real--Time-EF4444?style=flat-square&logo=socketdotio&logoColor=white) | **Real-Time Monitoring** | Socket.io integration streams fraud alerts to the dashboard instantly |
+| ![ai](https://img.shields.io/badge/-AI%20Scoring-F59E0B?style=flat-square&logo=scikitlearn&logoColor=white) | **AI Risk Scoring** | Machine learning model evaluates each transaction for fraudulent patterns |
+| ![auth](https://img.shields.io/badge/-Auth%20%26%20RBAC-22C55E?style=flat-square&logo=jsonwebtokens&logoColor=white) | **Secure Authentication** | JWT-based login with Role-Based Access Control (Admin, Analyst) |
+| ![dash](https://img.shields.io/badge/-Dashboard-3B82F6?style=flat-square&logo=chartdotjs&logoColor=white) | **Interactive Dashboard** | Animated KPI cards, risk distribution charts, and scalable data tables |
+| ![theme](https://img.shields.io/badge/-Theming-8B5CF6?style=flat-square&logo=css3&logoColor=white) | **Dark / Light Theme** | Seamless toggle between deep dark mode and vibrant light mode |
 
-## Folder Structure
+---
+
+## Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                          FALCON System                           │
+├────────────────────┬─────────────────────┬───────────────────────┤
+│   React / Vite     │   Node / Express    │   Python / FastAPI    │
+│    (Frontend)      │     (Backend)       │     (ML Service)      │
+│                    │                     │                       │
+│  · Dashboard UI    │  · REST API         │  · Risk Scoring       │
+│  · Charts          │  · JWT Auth / RBAC  │  · scikit-learn       │
+│  · Socket Client   │  · Socket Server    │  · pandas / pydantic  │
+└────────┬───────────┴──────────┬──────────┴──────────┬────────────┘
+         │                      │                      │
+         └──────────────────────▼──────────────────────┘
+                           MongoDB Atlas
+                      (Users & Transactions)
+```
+
+---
+
+## Project Structure
 
 ```
 FALCON/
 ├── client/          # React (Vite) Frontend
 ├── server/          # Node + Express Backend
 ├── ml-service/      # Python FastAPI ML Microservice
-├── docker/          # Dockerfiles & Compose
+├── docker/          # Dockerfiles & Compose config
 └── README.md
 ```
 
-## Installation Guide
+---
+
+## Getting Started
 
 ### Prerequisites
-- Node.js (v16+)
-- Python (v3.9+)
-- MongoDB Atlas account (or local MongoDB)
-- Docker & Docker Compose (optional for containerized running)
 
-### 1. Clone Repo
+Ensure the following are installed before proceeding:
+
+| Requirement | Version | Notes |
+|---|---|---|
+| ![Node](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white) | v16+ | Required for client and server |
+| ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) | v3.9+ | Required for ML service |
+| ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white) | Atlas or local | Database for users and transactions |
+| ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white) | Any recent | Optional — for containerized setup |
+
+---
+
+### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/yourusername/FALCON.git
 cd FALCON
 ```
 
-### 2. Setup Server
+---
+
+### 2. Backend Server
+
 ```bash
 cd server
 npm install
 cp .env.example .env
-# Edit .env and supply your variables (MONGO_URI, JWT_SECRET, etc.)
+# Fill in MONGO_URI, JWT_SECRET, and other required variables
 npm run dev
 ```
 
-### 3. Setup ML Service (with venv)
+---
+
+### 3. ML Service
+
 ```bash
 cd ml-service
 
-# Create virtual environment
+# Create and activate a virtual environment
 python -m venv venv
 
-# Activate virtual environment
-# Windows:
+# Windows
 venv\Scripts\activate
-# Mac/Linux:
-# source venv/bin/activate
+# macOS / Linux
+source venv/bin/activate
 
-# Install requirements
+# Install dependencies and start the service
 pip install -r requirements.txt
-
-# Run FastAPI server
 uvicorn app.main:app --reload --port 8000
 ```
 
-### 4. Setup Client
+---
+
+### 4. Frontend Client
+
 ```bash
 cd client
 npm install
@@ -93,45 +152,58 @@ cp .env.example .env
 npm run dev
 ```
 
-## Running the Project
+---
 
-To run the project locally, open three separate terminal windows and start each service concurrently.
+### 5. Running All Services Locally
 
-**Terminal 1: Start the Frontend (React)**
+Open three separate terminals and start each service concurrently:
+
 ```bash
-cd client
-npm install
-npm run dev
-```
+# Terminal 1 — Frontend
+cd client && npm run dev
 
-**Terminal 2: Start the Backend Server (Node.js)**
-```bash
-cd server
-npm install
-npm run dev
-```
+# Terminal 2 — Backend
+cd server && npm run dev
 
-**Terminal 3: Start the Machine Learning Service (FastAPI/Python)**
-```bash
+# Terminal 3 — ML Service
 cd ml-service
-venv\Scripts\activate
-pip install -r requirements.txt
+source venv/bin/activate      # Windows: venv\Scripts\activate
 uvicorn app.main:app --reload
 ```
 
+---
+
 ## Docker Setup
 
-To run the entire stack using Docker Compose:
+Spin up the entire stack with a single command using Docker Compose:
 
 ```bash
 docker-compose --file docker/docker-compose.yml up --build
 ```
 
+---
+
 ## API Documentation
 
-Swagger documentation is available at `http://localhost:5000/api-docs` when running the backend in development.
-The ML service documentation is available at `http://localhost:8000/docs`.
+| Service | URL | Notes |
+|---|---|---|
+| ![swagger](https://img.shields.io/badge/Backend-5000-85EA2D?style=flat-square&logo=swagger&logoColor=black) | `http://localhost:5000/api-docs` | Swagger UI, available in dev mode |
+| ![fastapi](https://img.shields.io/badge/ML%20Service-8000-009688?style=flat-square&logo=fastapi&logoColor=white) | `http://localhost:8000/docs` | FastAPI auto-generated docs |
+
+---
 
 ## License
 
-MIT License
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+
+[![GitHub Stars](https://img.shields.io/github/stars/yourusername/FALCON?style=flat-square&logo=github&logoColor=white&color=333)](https://github.com/yourusername/FALCON)
+&nbsp;
+[![GitHub Forks](https://img.shields.io/github/forks/yourusername/FALCON?style=flat-square&logo=github&logoColor=white&color=333)](https://github.com/yourusername/FALCON/fork)
+
+FALCON &copy; 2024
+
+</div>
