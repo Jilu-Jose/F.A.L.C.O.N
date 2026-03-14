@@ -93,10 +93,29 @@ npm run dev
 
 ## Running the Project
 
-1. Start MongoDB connection.
-2. Start the `server` on port 5000.
-3. Start the `ml-service` on port 8000.
-4. Start the `client` on port 5173 (Vite default).
+To run the project locally, open three separate terminal windows and start each service concurrently.
+
+**Terminal 1: Start the Frontend (React)**
+```bash
+cd client
+npm install
+npm run dev
+```
+
+**Terminal 2: Start the Backend Server (Node.js)**
+```bash
+cd server
+npm install
+npm run dev
+```
+
+**Terminal 3: Start the Machine Learning Service (FastAPI/Python)**
+```bash
+cd ml-service
+venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
 
 ## Docker Setup
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ShieldCheck, ShieldAlert, Activity, LogOut, Send, AlertCircle, TrendingUp, DollarSign, Database, Download, Globe, Server, Clock } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, Activity, LogOut, Send, AlertCircle, TrendingUp, DollarSign, Database, Download, Globe, Server, Clock, Trash2, Edit } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, ScatterChart, Scatter, ZAxis } from 'recharts';
 
 const Dashboard = () => {
@@ -149,6 +149,17 @@ const Dashboard = () => {
         return true;
     });
 
+    // Table Action: Remove Item
+    const handleRemoveItem = (id) => {
+        setHistory(prev => prev.filter(item => item.id !== id));
+    };
+
+    // Table Action: Edit Item
+    const handleEditItem = (item) => {
+        setFormData(item.inputs);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     // Feature 1: CSV Export Action
     const handleExportCSV = () => {
         const headers = ['Time', 'Amount', 'Method', 'Region', 'Risk Score', 'Status'];
@@ -187,6 +198,12 @@ const Dashboard = () => {
         ? (history.reduce((acc, h) => acc + h.riskScore, 0) / totalTransactions).toFixed(1)
         : 0;
     const totalAmountAnalyzed = history.reduce((acc, h) => acc + Number(h.inputs.transaction_amount), 0);
+    const validCases = totalTransactions - fraudCases;
+
+    const donutData = [
+        { name: 'Intercepted', value: fraudCases },
+        { name: 'Valid', value: validCases }
+    ];
 
     const trendData = [...history].reverse().slice(-15).map((h) => ({
         time: h.timestamp.split(' ')[0],
@@ -259,23 +276,23 @@ const Dashboard = () => {
 
                     {/* Live Global Threat Feed */}
                     <div className="lg:col-span-1 flex flex-col gap-4">
-                        <div className="bg-gray-900 dark:bg-black rounded-xl p-5 border border-gray-800 shadow-xl overflow-hidden relative">
+                        <div className="bg-gray-100 dark:bg-black rounded-xl p-5 border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden relative transition-colors">
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="w-2 h-2 rounded-full bg-red-500 animate-ping"></div>
-                                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Live Intercept Feed</h3>
+                                <h3 className="text-sm font-bold text-gray-800 dark:text-white uppercase tracking-wider">Live Intercept Feed</h3>
                             </div>
                             <div className="space-y-3 relative z-10">
                                 {liveFeed.map((feed) => (
-                                    <div key={feed.id} className="bg-gray-800/80 p-3 rounded-lg border border-gray-700 text-xs animate-in slide-in-from-right duration-500">
-                                        <div className="flex justify-between items-center text-gray-400 mb-1">
+                                    <div key={feed.id} className="bg-white/90 dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700 text-xs animate-in slide-in-from-right duration-500">
+                                        <div className="flex justify-between items-center text-gray-500 dark:text-gray-400 mb-1">
                                             <span className="flex items-center gap-1"><Globe className="w-3 h-3" /> {feed.region}</span>
-                                            <span className="text-red-400 font-bold">BLOCKED</span>
+                                            <span className="text-red-500 dark:text-red-400 font-bold">BLOCKED</span>
                                         </div>
-                                        <div className="text-white font-medium">${feed.amount.toLocaleString()} • {feed.type}</div>
+                                        <div className="text-gray-900 dark:text-white font-medium">${feed.amount.toLocaleString()} • {feed.type}</div>
                                     </div>
                                 ))}
                             </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-gray-100/80 dark:from-black/80 to-transparent pointer-events-none"></div>
                         </div>
                     </div>
 
@@ -424,7 +441,7 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                     <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gray-700 pb-4 flex items-center gap-2">
                             <TrendingUp className="w-5 h-5 text-blue-500" />
@@ -468,6 +485,40 @@ const Dashboard = () => {
                                     <Scatter name="Transactions" data={trendData} fill="#8b5cf6" />
                                 </ScatterChart>
                             </ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    {/* NEW Donut Chart */}
+                    <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+                        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gray-700 pb-4 flex items-center gap-2">
+                            <Database className="w-5 h-5 text-green-500" />
+                            Global Distribution
+                        </h2>
+                        <div className="h-64 flex flex-col items-center justify-center">
+                            {totalTransactions > 0 ? (
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={donutData}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={80}
+                                            paddingAngle={5}
+                                            dataKey="value"
+                                        >
+                                            {donutData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6', borderRadius: '0.5rem' }}
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            ) : (
+                                <p className="text-sm text-gray-400">No telemetry data available.</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -514,6 +565,7 @@ const Dashboard = () => {
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Global Zone</th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Model Index (Risk)</th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Security Action</th>
+                                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Manage</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -541,6 +593,14 @@ const Dashboard = () => {
                                                 <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-md uppercase tracking-wider ${item.isFraud ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20' : 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20'}`}>
                                                     {item.isFraud ? 'Intercepted' : 'Valid'}
                                                 </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button onClick={() => handleEditItem(item)} className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-4 transition-colors">
+                                                    <Edit className="w-4 h-4 inline" />
+                                                </button>
+                                                <button onClick={() => handleRemoveItem(item.id)} className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+                                                    <Trash2 className="w-4 h-4 inline" />
+                                                </button>
                                             </td>
                                         </tr>
                                     ))
