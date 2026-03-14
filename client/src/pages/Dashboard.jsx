@@ -96,7 +96,8 @@ const Dashboard = () => {
             const token = localStorage.getItem('token');
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-            const response = await axios.post('http://localhost:8000/predict', formData, {
+            const ML_API_URL = import.meta.env.VITE_ML_API_URL || 'http://localhost:8000';
+            const response = await axios.post(`${ML_API_URL}/predict`, formData, {
                 headers
             });
 
@@ -116,7 +117,8 @@ const Dashboard = () => {
                 try {
                     const userEmail = localStorage.getItem('userEmail');
                     if (userEmail) {
-                        await axios.post('http://localhost:5000/api/alert/fraud-alert', {
+                        const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5000';
+                        await axios.post(`${BACKEND_URL}/api/alert/fraud-alert`, {
                             email: userEmail,
                             transactionDetails: historyItem
                         });
