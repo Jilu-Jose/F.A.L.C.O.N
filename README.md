@@ -6,6 +6,8 @@
 
 FALCON is a production-ready MERN stack financial fraud detection system powered by AI. It features a React frontend, a Node.js/Express backend, and a Python FastAPI ML microservice to provide real-time fraud alerts and risk scoring for financial transactions.
 
+Live: https://f-a-l-c-o-n.vercel.app/
+
 ## Architecture Diagram
 
 - **Client (React/Vite)**: Modern frontend with dynamic dashboard.
