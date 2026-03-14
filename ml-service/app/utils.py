@@ -2,7 +2,7 @@ import os
 import joblib
 
 MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "model")
-MODEL_PATH = os.path.join(MODEL_DIR, "fraud_model.pkl")
+MODEL_PATH = os.path.join(MODEL_DIR, "RandomForest.pkl")
 SCALER_PATH = os.path.join(MODEL_DIR, "scaler.pkl")
 
 # Singletons for memory efficiency
