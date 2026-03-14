@@ -2,7 +2,6 @@
 
 <img src="client\src\assets\logos\Screenshot 2026-03-14 140427.png" alt="FALCON Logo" width="140" />
 
-# FALCON
 
 ### Financial Anomaly & Loss Control Optimization Network
 
