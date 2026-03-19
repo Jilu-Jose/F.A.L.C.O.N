@@ -24,7 +24,6 @@ const ArchitectureSection = () => {
                             <Layers size={32} />
                         </div>
                         <h3 className="text-xl font-bold dark:text-white mb-2">React Client</h3>
-                        <p className="font-mono text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-dark-200 py-1 rounded">Port 5173</p>
                     </div>
 
                     <div className="hidden md:flex flex-col items-center z-10">
@@ -37,7 +36,6 @@ const ArchitectureSection = () => {
                             <Server size={32} />
                         </div>
                         <h3 className="text-xl font-bold dark:text-white mb-2">Node.js API</h3>
-                        <p className="font-mono text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-dark-200 py-1 rounded">Port 5000</p>
                     </div>
 
                     <div className="hidden md:flex flex-col items-center z-10 space-y-2">
@@ -50,7 +48,6 @@ const ArchitectureSection = () => {
                             <Cpu size={32} />
                         </div>
                         <h3 className="text-xl font-bold dark:text-white mb-2">FastAPI ML</h3>
-                        <p className="font-mono text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-dark-200 py-1 rounded">Port 8000</p>
                     </div>
 
                     <div className="hidden md:flex flex-col items-center z-10 space-y-2">
@@ -63,7 +60,6 @@ const ArchitectureSection = () => {
                             <Database size={32} />
                         </div>
                         <h3 className="text-xl font-bold dark:text-white mb-2">MongoDB</h3>
-                        <p className="font-mono text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-dark-200 py-1 rounded">Port 27017</p>
                     </div>
 
                 </div>
